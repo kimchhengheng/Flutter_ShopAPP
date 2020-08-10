@@ -1,6 +1,11 @@
 # shop_app
 
-A new Flutter application.
+This is a shop app.
+User can add product to the shop<br/>
+User can mark product as their favourite , then they can display only their favourite product.<br/>
+User can add the product to the carte <br/>
+Product can be deleted from the carte <br/>
+
 
 ## Getting Started
 
