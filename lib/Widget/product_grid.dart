@@ -5,6 +5,7 @@ import '../Widget/product_item.dart';
 import '../Provider/Products.dart';
 
 
+// ignore: must_be_immutable
 class ProductGrid extends StatelessWidget {
   bool showFavourite;
 

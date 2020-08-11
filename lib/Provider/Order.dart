@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/Provider/Product.dart';
+
 
 
 class OrderItem {
   final String id;
   final double amount;
-  final Map<int, Product> products;
+  final List<Map<String,Object>> products;
   final DateTime dateTime;
 
   OrderItem(

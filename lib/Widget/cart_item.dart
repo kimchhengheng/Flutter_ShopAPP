@@ -88,8 +88,6 @@ class CartItem extends StatelessWidget {
                   Text('${displayCartItem.quantity} X ${displayCartItem.product.price}'),
                 ],
               ),
-
-
         ),
       ),
     );

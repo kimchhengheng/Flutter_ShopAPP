@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Provider/Order.dart';
-import '../Provider/Product.dart';
-import '../Provider/Cart.dart' show CartList;
+import '../Provider/Cart.dart' ;
 
 import '../Screen/product_order.dart';
 
-import '../Widget/cart_item.dart';
-import '../Widget/app_drawer.dart';
+import '../Widget/cart_item.dart' as cartIS;
+
 
 
 
@@ -24,7 +23,7 @@ class ProductCart extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text("Product Cart"),
         ),
-        drawer: AppDrawer(),
+
         body: Column(
           children: [
             Card(
@@ -44,12 +43,26 @@ class ProductCart extends StatelessWidget {
                       child: Text("Order Now", style: TextStyle(color: Theme.of(context).primaryColorDark),),
                       onPressed: () {
                         // add order then clear cart
-                        // the order is not map but it is the list of list , we can make it map cart too
-                        // so we have to create a OrderItem first
+//                      orders is list of orderItem, orderitem have unique id total amount price, list of map quantity and product , datetime
+                      // do we have check carte is empty?
+                        if(cartmap.isNotEmpty){
+                          List<Map<String, Object>> prods=[];
+                          cartmap.values.toList().forEach((cartit) {
+                            prods.insert(0, {'quantity': cartit.quantity, 'product': cartit.product});
+                          });
+                          order.addOrder(OrderItem(id: DateTime.now().toString(), products: prods,dateTime: DateTime.now(), amount: cartlist.totalPrice));
+                          cartlist.clear();
+                          Navigator.of(context).pushReplacementNamed(ProductOrder.routeName);
+                        }
+                        else {
+                          Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("The cart is empty cannot proceed order"),
+                            )
+                          );
+                        }
 
 
-                        cartlist.clear();
-                        Navigator.of(context).pushReplacementNamed(ProductOrder.routeName);
                       },
                     )
                   ],
@@ -61,7 +74,7 @@ class ProductCart extends StatelessWidget {
               child: ListView.builder(
                   itemCount: cartlist.amount,
                   itemBuilder: (context, index) {
-                    return CartItem(cartmap.values.toList()[index]);
+                    return cartIS.CartItem(cartmap.values.toList()[index]);
                   }
               ),
             )
