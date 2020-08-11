@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/Screen/product_detail_screen.dart';
+
+import '../Provider/Cart.dart';
+import '../Screen/product_detail_screen.dart';
 import '../Provider/Product.dart';
 
 class ProductItem extends StatelessWidget {
@@ -12,6 +14,7 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
+    final cartlist = Provider.of<CartList>(context);
     return GridTile(
       child: GestureDetector(
         onTap: () {
@@ -33,10 +36,28 @@ class ProductItem extends StatelessWidget {
               product.toggleFavorite();
             },
           ),
+//          the place that need to rebuilt is the fav icon so we can make it consumer only this
           title: Text(product.title) ,
           trailing: IconButton(
             icon: Icon(Icons.add_shopping_cart, color: Theme.of(context).primaryColorLight),
-            onPressed: () {},
+            onPressed: () {
+              // should show dialog and undo
+              cartlist.addItem(product.id, product);
+              // this go the nearest scafold
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Items add to the cart"),
+                  action: SnackBarAction(
+                    label: 'Undo',
+                    onPressed: () {
+                      cartlist.undoAddItem(product.id);
+                    },
+                  ),
+                )
+              );
+
+            },
           ),
         ),
       )

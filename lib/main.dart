@@ -1,10 +1,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/Screen/product_detail_screen.dart';
-import 'package:shop_app/Screen/products_overview_screen.dart';
+import 'package:shop_app/Provider/Order.dart';
 
-import './Provider/Products.dart';
+
+import 'Screen/product_cart.dart';
+import 'Screen/product_detail_screen.dart';
+import 'Screen/product_order.dart';
+import 'Screen/products_overview_screen.dart';
+
+import 'Provider/Products.dart';
+import 'Provider/Cart.dart';
+import 'Provider/Order.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -15,19 +23,26 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // if we make ChangeNotifierProvider within the material app the route will be disposed it cannot go back
-    return ChangeNotifierProvider(
-      create: (ctx) => Products(),
+    return MultiProvider(
+
+      providers: [
+        ChangeNotifierProvider<Products>(create: (ctx) => Products(),),
+        ChangeNotifierProvider<CartList>(create: (ctx) => CartList(),),
+        ChangeNotifierProvider<OrdersList>(create: (ctx) => OrdersList(),),
+      ],
       child: MaterialApp(
 
         theme: ThemeData(
-          primarySwatch: Colors.cyan,
-//        accentColor: Colors.limeAccent,
+          primarySwatch: Colors.pink,
+          accentColor: Colors.red,
 
         ),
 
           routes: {
             '/' : (ctx) => ProductsOverviewScreen(),
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+            ProductCart.routeName: (ctx) => ProductCart(),
+            ProductOrder.routeName: (ctx) => ProductOrder(),
 
           },
       ),
