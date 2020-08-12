@@ -51,8 +51,11 @@ class Products with ChangeNotifier {
   Product getProductbyID(String id){
     return _items.firstWhere((prod) => prod.id == id);
   }
+  //add product
   void add (){
     // when we add a product we have to notify all the widget that using Products object that it has been change
     notifyListeners();
   }
+  // remove prod
+
 }
