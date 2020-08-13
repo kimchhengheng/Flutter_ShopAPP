@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../Provider/Products.dart';
+
 import '../Provider/Cart.dart';
 import '../Provider/Cart.dart' as ci;
 
@@ -24,6 +26,7 @@ class CartItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var cartlist = Provider.of<CartList>(context);
+//    var products = Provider.of<Products>(context);
     // display the picture, title  , quantiy , price
     return Dismissible(
       key: ValueKey(DateTime.now()),// the key have to be unique, when i increase by swipe to the right make used the same key so it not working 

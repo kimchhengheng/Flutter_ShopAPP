@@ -49,7 +49,9 @@ class Products with ChangeNotifier {
     return _items.where((prod) => prod.isFavorite).toList();
   }
   Product getProductbyID(String id){
+    // should we check the _items empty or not
     return _items.firstWhere((prod) => prod.id == id);
+    // first where return the element
   }
   //add product
   void add (){
@@ -57,5 +59,12 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
   // remove prod
+  void deleteProduct(String produceId){
+    if(_items.isNotEmpty){
+      _items.removeWhere((prod) =>prod.id == produceId );
+    }
+
+    notifyListeners();
+  }
 
 }

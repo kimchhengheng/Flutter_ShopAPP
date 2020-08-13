@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../Provider/Products.dart';
+
 import '../Provider/Order.dart';
 import '../Provider/Cart.dart' ;
 
@@ -14,11 +16,14 @@ import '../Widget/cart_item.dart' as cartIS;
 class ProductCart extends StatelessWidget {
   static String routeName = "/cart";
 
+
+
   @override
   Widget build(BuildContext context) {
     var cartlist = Provider.of<CartList>(context);
     var cartmap= cartlist.cartlist;
     var order = Provider.of<OrdersList>(context);
+
     return Container(
       child: Scaffold(
         appBar: AppBar(title: Text("Product Cart"),
@@ -74,6 +79,7 @@ class ProductCart extends StatelessWidget {
               child: ListView.builder(
                   itemCount: cartlist.amount,
                   itemBuilder: (context, index) {
+
                     return cartIS.CartItem(cartmap.values.toList()[index]);
                   }
               ),
