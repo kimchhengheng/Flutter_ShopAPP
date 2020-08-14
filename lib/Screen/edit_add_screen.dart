@@ -7,6 +7,7 @@
 //The framework will call this init method exactly once for each State object it creates.
 // didchange depency when dependency of the state change
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,9 +28,10 @@ class _EditAddScreenState extends State<EditAddScreen> {
   final _descripfnode = FocusNode();
   final _imageurlfnode = FocusNode();
   var _imagecontent= TextEditingController();
+  Products productlist ;
   bool edit=false;
   bool firstinit = true; // attribute of the class is only one
-  Map<String, String> product = {};
+  Map<String, Object> product = {};
 
   @override
   void initState() {
@@ -42,16 +44,19 @@ class _EditAddScreenState extends State<EditAddScreen> {
     // this call many time not like inite call only one time but inite cannot access the context so used this to access context but make sure it work only one time
     if(firstinit){
       String productId = ModalRoute.of(context).settings.arguments as String;
-      var prod=productId!=null? Provider.of<Products>(context, listen: false).getProductbyID(productId): null;
+      productlist = Provider.of<Products>(context);
+//      print(productId);
+      var prod= (productId !=null )? productlist.getProductbyID(productId): null;
+
       if(prod !=null){
         product['id']= prod.id;
         product['title'] = prod.title;
-        product['price'] = prod.price.toString();
+        product['price'] = prod.price;
         product['description'] = prod.description;
         product['imageUrl'] = prod.imageUrl;
-        product['isFavorite'] = prod.isFavorite.toString();
+        product['isFavorite'] = prod.isFavorite;
+        _imagecontent = TextEditingController(text: product['imageUrl']);
       }
-
     }
     firstinit=false;
     super.didChangeDependencies();
@@ -67,8 +72,13 @@ class _EditAddScreenState extends State<EditAddScreen> {
     _form.currentState.validate();
 
     _form.currentState.save();// this global key of generic FormState will get the value in onSaved when the on submit is press because i make only a specific place to saved that why not handle each one differently
+    // we have to make sure the product keep the id and favorite , instead of save to the new one
+
     print(product);
+    productlist.addProduct(product);
+
   }
+
 
   @override
   void dispose() {
@@ -76,6 +86,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
     _descripfnode.dispose();
     _imageurlfnode.dispose();
     _imagecontent.dispose();
+
     super.dispose();
   }
   @override
@@ -86,7 +97,11 @@ class _EditAddScreenState extends State<EditAddScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.save),
-            onPressed: _saveForm,
+            onPressed: () {
+              _saveForm();
+              Navigator.of(context).pop();
+            }
+
           )
         ],
       ),
@@ -120,7 +135,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
                   },
                 ),
                 TextFormField(
-                  initialValue: product.isNotEmpty? product['price']: "",
+                  initialValue: product.isNotEmpty? product['price'].toString() : "",
                   focusNode: _pricefnode,
                   decoration: InputDecoration(
                     labelText: "Price",
@@ -187,11 +202,18 @@ class _EditAddScreenState extends State<EditAddScreen> {
                       ),
                       width: 100,
                       height: 100,
-                      child: _imagecontent.text.isEmpty? Text( "Image URL",textAlign: TextAlign.center,): Image.network(_imagecontent.text, fit: BoxFit.cover,),
+                      child: _imagecontent.text.isEmpty? Text( "Image URL",textAlign: TextAlign.center,):
+                      CachedNetworkImage(
+                        imageUrl: _imagecontent.text,
+                        //placeholder: (context, url) => CircularProgressIndicator(), //Widget displayed while the target [imageUrl] is loading.
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                      //_imagecontent.text.isEmpty? Text( "Image URL",textAlign: TextAlign.center,): Image.network(_imagecontent.text, fit: BoxFit.cover,),
                     ),
                     Expanded(
                       child: TextFormField(
-                        initialValue: product.isNotEmpty? product['imageUrl']: "",
+                        // we cannot used initialvale and controller at the same time
+                        //initialValue: product.isNotEmpty? product['imageUrl']: "",
                         controller: _imagecontent,
                         focusNode: _imageurlfnode,
                         keyboardType: TextInputType.url,
@@ -204,15 +226,17 @@ class _EditAddScreenState extends State<EditAddScreen> {
                         }
                         ,
                         validator: (value) {
+
                           if(value.isEmpty){
                             return 'Please input the image URL';
                           }
+
                           return null;
                         },
                         textInputAction: TextInputAction.done, // make the nexk on the softkeyboard
                         onFieldSubmitted: (value) {
                           // when click submit we should call the method to save
-                          _saveForm;
+                          _saveForm();
                           Navigator.of(context).pop();
                           // save then should pop to previous screen
                         },

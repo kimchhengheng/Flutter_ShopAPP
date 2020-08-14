@@ -53,8 +53,33 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
     // first where return the element
   }
+
+
+
   //add product
-  void add (){
+  void addProduct(Map<String, Object> product){
+    if(product.containsKey("id") ){// if it have the key id it mean the product is edit , without key id mean new
+        _items.removeWhere((prod) => prod.id == product['id']);
+
+        _items.add(Product(
+            id: product['id'],
+            title: product['title'],
+            description: product['description'],
+            price: double.parse(product['price']),
+            imageUrl: product['imageUrl'],
+            isFavorite: product['isFavorite'],
+        )
+        );
+    }
+    else{
+      _items.add(Product(
+          id: DateTime.now().toString(),
+          title: product['title'],
+          description: product['description'],
+          price: double.parse(product['price']),
+          imageUrl: product['imageUrl'])
+      );
+    }
     // when we add a product we have to notify all the widget that using Products object that it has been change
     notifyListeners();
   }
