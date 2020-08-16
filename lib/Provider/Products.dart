@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/Model/http_error.dart';
 import 'Product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 // provider is like a place where every widget can access the resource so we do not need to pass it back and forth
 // also when the value of it change we can notify all that listen to update there value or not change is depend on you
 // if we use stateful widget it would affect only one widget does not affect the other
@@ -53,43 +56,95 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
     // first where return the element
   }
+  Future<void> updateProduct(Map<String, Object> product) async{
+    final url = 'https://shopapp-7d685.firebaseio.com/product/${product['id']}.json';
+    int proInd = _items.indexWhere((prod) {return prod.id == product['id'];});
+    if(proInd >=0){
+      var respone = await http.patch(url, body: json.encode({
+                'title': product['title'],
+                'price':product['price'] ,
+                'description': product['description'] ,
+                'imageUrl': product['imageUrl'],
+              }));
+      if(respone.statusCode>=400) throw HttpError("cannot update");
+      _items[proInd]= Product(
+        id: product['id'],
+        title: product['title'],
+        description: product['description'],
+        price: double.parse(product['price']),
+        imageUrl: product['imageUrl'],
+        isFavorite: product['isFavorite'],
+      );
+      notifyListeners();
+    }
+       // _items.removeWhere((prod) => prod.id == product['id']);
 
+  }
 
 
   //add product
-  void addProduct(Map<String, Object> product){
-    if(product.containsKey("id") ){// if it have the key id it mean the product is edit , without key id mean new
-        _items.removeWhere((prod) => prod.id == product['id']);
-
+  // Future<void> mean is type future the return type is void which is the value pass to then method
+  Future<void> addProduct(Map<String, Object> product) async{
+      final url = 'https://shopapp-7d685.firebaseio.com/product.json';
+      product['isFavorite']=false;
+      // if there is problem post and get will throw the error automatically but not the patch put and delete
+  // the error does not throw and keep execute the code after the error part so handle the exception by ourself
+        var response = await http.post(url, body: json.encode(product));
+        if(response.statusCode >= 400) {
+          throw HttpError("Incomplete action");
+        }
         _items.add(Product(
-            id: product['id'],
+            id: json.decode(response.body)['name'],
             title: product['title'],
             description: product['description'],
             price: double.parse(product['price']),
-            imageUrl: product['imageUrl'],
-            isFavorite: product['isFavorite'],
-        )
+            imageUrl: product['imageUrl'])
         );
-    }
-    else{
-      _items.add(Product(
-          id: DateTime.now().toString(),
-          title: product['title'],
-          description: product['description'],
-          price: double.parse(product['price']),
-          imageUrl: product['imageUrl'])
-      );
-    }
-    // when we add a product we have to notify all the widget that using Products object that it has been change
-    notifyListeners();
-  }
-  // remove prod
-  void deleteProduct(String produceId){
-    if(_items.isNotEmpty){
-      _items.removeWhere((prod) =>prod.id == produceId );
-    }
+        notifyListeners();
 
+      }
+//        print(json.decode(response.body));  {name: -MEnh0ICOrGcsOeAk_Yi}
+
+
+
+
+
+//      print(json.decode(response.body));
+
+
+
+    // when we add a product we have to notify all the widget that using Products object that it has been change
+
+
+  // remove prod
+  Future<void> deleteProduct(String produceId) async{
+    // we remove the produce first if cannot remove put it back
+
+    final url = 'https://shopapp-7d685.firebaseio.com/product/$produceId.json';
+//    _items.forEach((element) {
+//      if(element.id == produceId)
+//        print(element.id);});
+    int deleteProInd = _items.indexWhere((prod) {return prod.id == produceId;});
+
+    Product delpro= _items.removeAt(deleteProInd);
     notifyListeners();
+    // if we dont notifylistener the product grid will try to access the one that we have delete
+    var response = await http.delete(url);
+    if(response.statusCode >=400) {
+      _items.insert(deleteProInd, delpro);
+      notifyListeners();
+      throw HttpError("Cannot delete");
+    }
+    deleteProInd = null;
+
+
+
+
+//    if(_items.isNotEmpty){
+//      _items.removeWhere((prod) =>prod.id == produceId );
+//    }
+
+
   }
 
 }

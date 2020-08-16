@@ -8,6 +8,7 @@
 // didchange depency when dependency of the state change
 
 import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +33,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
   bool edit=false;
   bool firstinit = true; // attribute of the class is only one
   Map<String, Object> product = {};
+  bool isloading=false;
 
   @override
   void initState() {
@@ -63,19 +65,83 @@ class _EditAddScreenState extends State<EditAddScreen> {
   }
   void _imageFocus(){
 
-    print(_imagecontent.text);
+//    print(_imagecontent.text);
     setState(() {
 
     });
   }
-  void _saveForm(){
-    _form.currentState.validate();
+  Future<void> _saveForm() async{
+    final isvalid = _form.currentState.validate();
+    if(!isvalid){
+      return ;
+    }
 
     _form.currentState.save();// this global key of generic FormState will get the value in onSaved when the on submit is press because i make only a specific place to saved that why not handle each one differently
     // we have to make sure the product keep the id and favorite , instead of save to the new one
+//    print(product);
+    setState(() {
+      isloading=true;
+    });
+    if(product.containsKey("id") ){// if it have the key id it mean the product is edit , without key id mean new
+      try {
+       await Provider.of<Products>(context, listen: false).updateProduct(product);
+      }
+      catch(error){
+        await showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Cannot edit the product .'),
+                actions: [
+                  FlatButton(
+                    child: Text("Okay"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],);
+            }
+        );
+      }
+    }
+    else{
+      // in case there is error we should show error
+      try{
+//        print(productlist.items);
 
-    print(product);
-    productlist.addProduct(product);
+
+          await Provider.of<Products>(context, listen: false).addProduct(product);
+
+//        productlist.addProduct(product);
+        // listen to false does not work
+
+      }
+      catch(error){
+//        print(productlist.items);
+      // without await infront of showDialog it does not wait until it finish so the navigator pop remove the AlertDiaglog pop
+        await showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Cannot add the product .'),
+                actions: [
+                  FlatButton(
+                    child: Text("Okay"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],);
+            }
+        );
+      }
+    }
+    setState(() {
+      isloading=false;
+    });
+     Navigator.of(context).pop();
 
   }
 
@@ -99,13 +165,14 @@ class _EditAddScreenState extends State<EditAddScreen> {
             icon: Icon(Icons.save),
             onPressed: () {
               _saveForm();
-              Navigator.of(context).pop();
             }
 
           )
         ],
       ),
-      body: Form(
+      body: isloading? Center(
+        child: CircularProgressIndicator(),
+      ):Form(
         key: _form,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(10),
@@ -237,7 +304,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
                         onFieldSubmitted: (value) {
                           // when click submit we should call the method to save
                           _saveForm();
-                          Navigator.of(context).pop();
+
                           // save then should pop to previous screen
                         },
                       ),

@@ -15,9 +15,12 @@ class UserProductItem extends StatelessWidget {
 
   UserProductItem(this.productid);
 
+
   @override
   Widget build(BuildContext context) {
-    var cartlist = Provider.of<CartList>(context);
+    final scafold = Scaffold.of(context);
+
+
     final products = Provider.of<Products>(context, listen: false);
     Product prod = products.getProductbyID(productid);
 
@@ -49,11 +52,29 @@ class UserProductItem extends StatelessWidget {
 
               IconButton(
                   icon: Icon(Icons.delete, color: Theme.of(context).primaryColor,),
-                  onPressed: () {
+                  onPressed: () async {
+                    try {
+                      await Provider.of<Products>(context, listen: false).deleteProduct(productid);
+                      print("after");
+                      Provider.of<CartList>(context, listen: false).removeCartItem(productid);
+
+                    }
+                    catch(error){
+
+                      await scafold.showSnackBar(
+                          SnackBar(
+                            content: Text("Cannot delete", textAlign: TextAlign.center,),
+                          ));
+                      // the scafold does not working
+                    //  element tree is no longer stable
+                    }
+
+
+
+                  }
                     // delete from the provider, allow delete from the cartlist
-                    products.deleteProduct(productid);
-                    cartlist.removeCartItem(productid);
-                  },
+
+
                 ),
 
           ],

@@ -21,9 +21,11 @@ class OrdersList with ChangeNotifier {
   List<OrderItem> _orderlist= [];
 
   List<OrderItem> get orderlist {
+    //fetch from the database
     return [..._orderlist];
   }
   void addOrder(OrderItem item){
+    // we should add to the db
     _orderlist.insert(0, item);
     notifyListeners();
   }
