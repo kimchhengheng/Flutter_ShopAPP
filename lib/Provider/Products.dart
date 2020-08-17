@@ -10,44 +10,74 @@ import 'dart:convert';
 // in create key of this widget it declare which instance will be the provider so the child and child of child, can retrieve the data without passing through constructor
 class Products with ChangeNotifier {
   List<Product> _items = [
-    Product(
-      id: 'p1',
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-      id: 'p2',
-      title: 'Trousers',
-      description: 'A nice pair of trousers.',
-      price: 59.99,
-      imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    ),
-    Product(
-      id: 'p3',
-      title: 'Yellow Scarf',
-      description: 'Warm and cozy - exactly what you need for the winter.',
-      price: 19.99,
-      imageUrl:
-      'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    ),
-    Product(
-      id: 'p4',
-      title: 'A Pan',
-      description: 'Prepare any meal you want.',
-      price: 49.99,
-      imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+//    Product(
+//      id: 'p1',
+//      title: 'Red Shirt',
+//      description: 'A red shirt - it is pretty red!',
+//      price: 29.99,
+//      imageUrl:
+//      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+//    ),
+//    Product(
+//      id: 'p2',
+//      title: 'Trousers',
+//      description: 'A nice pair of trousers.',
+//      price: 59.99,
+//      imageUrl:
+//      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+//    ),
+//    Product(
+//      id: 'p3',
+//      title: 'Yellow Scarf',
+//      description: 'Warm and cozy - exactly what you need for the winter.',
+//      price: 19.99,
+//      imageUrl:
+//      'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+//    ),
+//    Product(
+//      id: 'p4',
+//      title: 'A Pan',
+//      description: 'Prepare any meal you want.',
+//      price: 49.99,
+//      imageUrl:
+//      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
+//    ),
   ];
 
   List<Product> get items {
 //    _items;this would return the reference lead to data leak
     return [..._items]; // this mean make another list by taking the list extract one level outside
   }
+  // should have the fetch from database when the pull to refresh for product edit  and init for shop
+  Future<void> fetchAndSetProduct() async {
+    final url = 'https://shopapp-7d685.firebaseio.com/product.json';
+    // we have to wait until get every from the database so we need async await
+    try{
+      final response =await http.get(url);
+      final responseData = json.decode(response.body) as Map<String , dynamic>;
+      // flutter does not accept Map of Map
+      List<Product> productlist = [];
+      responseData.forEach((productId, productData) {
+        // you dont need to acess through responseData since it is key value pair iteration already
+//        print(productData['price'].runtimeType); string not double
+        productlist.add(Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            price: double.parse(productData['price']),
+            imageUrl:productData['imageUrl']));
+      });
+      _items = productlist;
+
+      notifyListeners();
+
+    }
+    catch(error){
+      print(error);
+    }
+
+  }
+
   List<Product> get onlyFavorite{
     return _items.where((prod) => prod.isFavorite).toList();
   }
@@ -131,6 +161,7 @@ class Products with ChangeNotifier {
     // if we dont notifylistener the product grid will try to access the one that we have delete
     var response = await http.delete(url);
     if(response.statusCode >=400) {
+
       _items.insert(deleteProInd, delpro);
       notifyListeners();
       throw HttpError("Cannot delete");

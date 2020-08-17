@@ -2,8 +2,11 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../Provider/Products.dart';
 import '../Provider/Cart.dart';
+
 import '../Screen/product_cart.dart';
+
 import '../Widget/app_drawer.dart';
 import '../Widget/product_grid.dart';
 // we want to display the favorite only or all but we don't want to affect the provider products we just want for only this screen
@@ -20,6 +23,32 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool isfav=false;
+  bool _firstinit =true;
+  bool _isloading = false;
+
+
+  @override
+  void didChangeDependencies() {
+   if(_firstinit){
+     setState(() {
+//       print("loading true");
+       _isloading= true;
+     });
+     // so if we not wait for the frecht to finish the setstate gonna execute before the that
+     Provider.of<Products>(context, listen: false).fetchAndSetProduct().then((_) {
+//          print("finish fetch ");
+
+       setState(() {
+//          print("loading true");
+         _isloading=false;
+       });
+     });
+
+
+   }
+    _firstinit=false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +99,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ]
       ),
       drawer: AppDrawer(),
-      body: ProductGrid(isfav),
+      body: _isloading? Center(
+        child: CircularProgressIndicator(),
+      ): ProductGrid(isfav),
       // this would create the grid view that each of it just called the item
     );
   }

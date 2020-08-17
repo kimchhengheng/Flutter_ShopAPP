@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../Provider/Products.dart';
+//import '../Provider/Products.dart';
 
 import '../Provider/Cart.dart';
-import '../Provider/Cart.dart' as ci;
+//import '../Provider/Cart.dart' as ci;
 
 class CartItem extends StatelessWidget {
-  final ci.CartItem displayCartItem;
+  final String id;
+  final String productId;
+  final double price;
+  final int quantity;
+  final String title;
 
-  CartItem (this.displayCartItem);
+  CartItem(
+      this.id,
+      this.productId,
+      this.price,
+      this.quantity,
+      this.title,
+      );
+
+
   Widget getContainer(bool delete){
     return Container(
       decoration: BoxDecoration(
@@ -69,10 +81,10 @@ class CartItem extends StatelessWidget {
       onDismissed: (direction) {
         bool del = direction == DismissDirection.endToStart;
         if(del){
-          cartlist.removeCartItem(displayCartItem.product.id);
+          cartlist.removeCartItem(productId);
         }
         else{
-          cartlist.addItem(displayCartItem.product.id, displayCartItem.product);
+          cartlist.addItem(productId,title,price);
         }
         // remove the whole product from the list
 
@@ -81,16 +93,15 @@ class CartItem extends StatelessWidget {
         elevation: 3,
         child: ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(displayCartItem.product.imageUrl),
-            ) ,
-            title: Text(displayCartItem.title) ,
-            trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("\$ ${(displayCartItem.quantity * displayCartItem.product.price *1.0).toStringAsFixed(2)}"),
-                  Text('${displayCartItem.quantity} X ${displayCartItem.product.price}'),
-                ],
+              radius: 25,
+              backgroundColor: Theme.of(context).primaryColorLight,
+              child: FittedBox(
+                child: Text("\$ ${(quantity * price *1.0).toStringAsFixed(2)}"),
               ),
+            ),
+            title: Text(title) ,
+            trailing:
+                  Text('$quantity X $price'),
         ),
       ),
     );

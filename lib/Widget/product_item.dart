@@ -42,7 +42,7 @@ class ProductItem extends StatelessWidget {
             icon: Icon(Icons.add_shopping_cart, color: Theme.of(context).primaryColorLight),
             onPressed: () {
               // should show dialog and undo
-              cartlist.addItem(product.id, product);
+              cartlist.addItem(product.id, product.title, product.price);
               // this go the nearest scafold
               Scaffold.of(context).hideCurrentSnackBar();
               Scaffold.of(context).showSnackBar(

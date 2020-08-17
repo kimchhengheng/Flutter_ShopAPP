@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../Provider/Cart.dart';
+//import '../Provider/Cart.dart';
 
 import '../Screen/edit_add_screen.dart';
 
@@ -54,14 +54,24 @@ class UserProductItem extends StatelessWidget {
                   icon: Icon(Icons.delete, color: Theme.of(context).primaryColor,),
                   onPressed: () async {
                     try {
+
                       await Provider.of<Products>(context, listen: false).deleteProduct(productid);
-                      print("after");
-                      Provider.of<CartList>(context, listen: false).removeCartItem(productid);
+
+
+                    // cannot find the problem why cannot remove from cartlist
+//                      try{
+                      // Provider.of<CartList>(context).removeCartItem(productid);
+
+//                      }
+//                      catch(error){
+//                        print('cannot remove the cartitem');
+//                      }
+
 
                     }
                     catch(error){
 
-                      await scafold.showSnackBar(
+                      scafold.showSnackBar(
                           SnackBar(
                             content: Text("Cannot delete", textAlign: TextAlign.center,),
                           ));

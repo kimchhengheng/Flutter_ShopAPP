@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-import 'Product.dart';
+//import 'Product.dart';
 
 class CartItem {
   final String id;
   final String title;
   final int quantity;
   // we can make a change of quantity then we have to make it as provider too to rebuilt widget when increase
-  final Product product;
+  final double price;
 
   CartItem({
     @required this.id,
     @required this.title,
     @required this.quantity,
-    @required this.product
+    @required this.price
   });
 }
 
@@ -24,19 +24,20 @@ class CartList with ChangeNotifier {
 
   Map<String, CartItem> get cartlist => {..._cartlist} ;
 
-  void addItem(String productId, Product product){
+  void addItem(String productId, String title, double price){
     if(_cartlist.containsKey(productId)){
       // increase the qunatiy_
       _cartlist.update(productId, (oldvalue) {
-        return CartItem(id: oldvalue.id,
+        return CartItem(
+            id: oldvalue.id,
             title: oldvalue.title,
-            product: oldvalue.product,
+            price: oldvalue.price,
             quantity: oldvalue.quantity + 1);
       } );
     }
     else {
       // add the new item with productId as the key 
-      _cartlist.putIfAbsent(productId, () => CartItem(id: DateTime.now().toString(), title: product.title, product: product, quantity: 1));
+      _cartlist.putIfAbsent(productId, () => CartItem(id: DateTime.now().toString(), title: title, price: price, quantity: 1));
     }
     notifyListeners();
   }
@@ -46,14 +47,20 @@ class CartList with ChangeNotifier {
   double get totalPrice {
     double total = 0.0;
     _cartlist.forEach((k, v) {
-      total += _cartlist[k].quantity * _cartlist[k].product.price;
+      total += _cartlist[k].quantity * _cartlist[k].price;
   });
     return total;
   }
   // this is remove the how quantity
   void removeCartItem(String productId){
-    _cartlist.remove(productId);
-    notifyListeners();
+    // check the product in the cartlist first
+//    print(_cartlist.containsKey(productId));
+    if(_cartlist.containsKey(productId)){
+//      print("remove");
+      _cartlist.remove(productId);
+      notifyListeners();
+    }
+
   }
   // this is just remove only one quantity
   void undoAddItem(String productId){
@@ -62,7 +69,7 @@ class CartList with ChangeNotifier {
       _cartlist.update(productId, (oldvalue) {
         return CartItem(id: oldvalue.id,
             title: oldvalue.title,
-            product: oldvalue.product,
+            price: oldvalue.price,
             quantity: oldvalue.quantity - 1);
       } );
     }
