@@ -10,7 +10,7 @@ import '../Screen/product_order.dart';
 
 import '../Widget/cart_item.dart' as cartIS;
 
-// we want disable and loading when we send order
+// we want disable and loading when we send order    ?????
 
 // now delete the product does not delete in the cartlist
 
@@ -79,6 +79,7 @@ class ProductCart extends StatelessWidget {
 class OrderButton extends StatefulWidget {
   final CartList cart;
 
+
   OrderButton( {Key key,
       @required this.cart,
     }) : super(key: key);
@@ -88,22 +89,27 @@ class OrderButton extends StatefulWidget {
 }
 
 class _OrderButtonState extends State<OrderButton> {
+  bool _isloading=false;
 
 
-  void ordernow(){
 
-  }
 
   @override
   Widget build(BuildContext context) {
     
     return FlatButton(
-      child: Text("Order Now", style: TextStyle(color: Theme.of(context).primaryColorDark),),
-      onPressed: widget.cart.amount == 0 ? null : () async{
+      child: _isloading? CircularProgressIndicator(): Text("Order Now", style: TextStyle(color: Theme.of(context).primaryColorDark),),
+      // ordernow disable when the list is empty , and loading spiner when we processing
+      onPressed: (widget.cart.amount <= 0 || _isloading) ? null : () async{
         // we can try catch to make sure it add already no problem happend during send http request
+        setState(() {
+          _isloading = true;
+        });
         await Provider.of<OrdersList>(context, listen: false).addOrder(widget.cart.cartlist.values.toList(),widget.cart.totalPrice );
-        
-       
+        setState(() {
+          _isloading = false;
+        });
+
         widget.cart.clear();
         Navigator.of(context).pushReplacementNamed(ProductOrder.routeName);
       },

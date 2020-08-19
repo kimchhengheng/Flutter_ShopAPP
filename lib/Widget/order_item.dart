@@ -60,7 +60,7 @@ class DisplayExtended extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                             Text('${item.quantity} X ${item.price}'),
-                            Text('Total: \$ ${(item.quantity*item.quantity*1.0).toStringAsFixed(2)} ')
+                            Text('Total: \$ ${(item.quantity*item.price*1.0).toStringAsFixed(2)} ')
                    ]
               );
              }

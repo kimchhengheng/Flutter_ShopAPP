@@ -183,6 +183,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
                 TextFormField(
                   initialValue: product.isNotEmpty? product['title']: "",
                   decoration: InputDecoration(
+
                     labelText: "Title",
                   ),
                   onSaved: (value) {

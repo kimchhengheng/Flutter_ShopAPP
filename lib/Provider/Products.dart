@@ -57,16 +57,21 @@ class Products with ChangeNotifier {
       final responseData = json.decode(response.body) as Map<String , dynamic>;
       // flutter does not accept Map of Map
       List<Product> productlist = [];
+
+      if(responseData.containsKey('error') || responseData == null)
+        return ;
       responseData.forEach((productId, productData) {
         // you dont need to acess through responseData since it is key value pair iteration already
 //        print(productData['price'].runtimeType); string not double
+
         productlist.add(Product(
             id: productId,
             title: productData['title'],
             description: productData['description'],
-            price: double.parse(productData['price']),
+            price: productData['price'],
             imageUrl:productData['imageUrl']));
       });
+      print('after');
       _items = productlist;
 
       notifyListeners();
@@ -74,6 +79,7 @@ class Products with ChangeNotifier {
     }
     catch(error){
       print(error);
+//      print('fechtand setup');
     }
 
   }

@@ -36,23 +36,34 @@ class OrdersList with ChangeNotifier {
       final responseData = json.decode(response.body) as Map<String , dynamic>;
       // flutter does not accept Map of Map
       List<OrderItem> orderlist = [];
+      if(responseData == null)
+        return ;
       responseData.forEach((orderId, orderData) {
         // you dont need to acess through responseData since it is key value pair iteration already
 //        print(productData['price'].runtimeType); string not double
-      print(orderData['products']);});
-//        orderlist.add(OrderItem(
-//            id: orderId,
-//            amount: orderData['amount'],
-//            dateTime: orderData['datetime'],
-//            products: orderData['products'].map((){
-//
-//            })
-//        ));
+//      print(orderId);
+//      print(orderData);
+//      print(orderData['products']);
+        orderlist.add(OrderItem(
+            id: orderId,
+            amount: orderData['amount'],
+            dateTime: DateTime.parse(orderData['datetime']),
+            products: (orderData['products'] as List<dynamic>).map((ele) {
+//             map function returns an iterator of a new array that each element excute the function
+            // so this list of OrderData would iterate through each element by map then each element would be create CartItem return as iterable list then convert by toList
 
-//      });
-//      _orderlist = orderlist;
-//
-//      notifyListeners();
+                return CartItem(
+                    id: ele['id'],
+                    title: ele['title'],
+                    quantity: ele['quantity'],
+                    price: ele['price']);
+            }).toList()
+        ));
+
+      });
+      _orderlist = orderlist.reversed.toList();
+
+      notifyListeners();
 
     }
     catch(error){
@@ -75,7 +86,7 @@ class OrdersList with ChangeNotifier {
                 'id': citem.id,
                 'title': citem.title,
                 'quantity': citem.quantity,
-                'product': citem.price,
+                'price': citem.price,
               };
           }).toList(),
       }));
