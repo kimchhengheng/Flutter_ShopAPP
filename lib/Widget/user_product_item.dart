@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-//import '../Provider/Cart.dart';
+import '../Provider/Cart.dart';
 
 import '../Screen/edit_add_screen.dart';
 
@@ -53,6 +53,9 @@ class UserProductItem extends StatelessWidget {
               IconButton(
                   icon: Icon(Icons.delete, color: Theme.of(context).primaryColor,),
                   onPressed: () async {
+                    CartItem itemtoremove = Provider.of<CartList>(context, listen: false).getCartItem(productid);
+                    print(itemtoremove.title);
+                    Provider.of<CartList>(context, listen: false).removeCartItem(productid);
                     try {
 
                       await Provider.of<Products>(context, listen: false).deleteProduct(productid);
@@ -70,7 +73,7 @@ class UserProductItem extends StatelessWidget {
 
                     }
                     catch(error){
-
+                      Provider.of<CartList>(context, listen: false).addItem(productid, itemtoremove.title, itemtoremove.price, itemtoremove.quantity);
                       scafold.showSnackBar(
                           SnackBar(
                             content: Text("Cannot delete", textAlign: TextAlign.center,),

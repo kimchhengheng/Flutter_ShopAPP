@@ -36,8 +36,9 @@ class ProductOrder extends StatelessWidget {
                   return Consumer<OrdersList> (// consumer would rebuit only the specific widget not the whole stafeful or stateless
                     builder: (context, value, _) {
                        return ListView.builder(
-                            itemCount: Provider.of<OrdersList>(context).orderlist.length ,
+                            itemCount: Provider.of<OrdersList>(context, listen: false).orderlist.length ,
                             itemBuilder: (context, ind) {
+
                               return orderIS.OrderItem(Provider.of<OrdersList>(context).orderlist[ind]);
                             }, // if we dont used consumer the rebuild and build method would run infinitely loop
                        );   //

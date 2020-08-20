@@ -42,15 +42,25 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<Auth>(create:  (ctx) => Auth(),),
         ChangeNotifierProxyProvider<Auth, Products>(
-          update: (ctx, auth, previousData) {
+          update: (ctx, auth,previousData ) {
+//            print('proxy provider update');
             return Products(
                 auth.token,
                 auth.userId,
                 previousData == null ? [] : previousData.items);
           },
         ),
+
         ChangeNotifierProvider<CartList>(create: (ctx) => CartList(),),
-        ChangeNotifierProvider<OrdersList>(create: (ctx) => OrdersList(),),
+        ChangeNotifierProxyProvider<Auth, OrdersList >(
+          update: (ctx, auth, _) {
+//            print('proxy provider update');
+            return OrdersList(
+              auth.token,
+              auth.userId,);
+          },
+        ),
+//        ChangeNotifierProvider<OrdersList>(create: (ctx) => OrdersList(),),
       ],
       child:Consumer<Auth>(
         // when the notifylisten in AUth this cosumer rebuild but not the build of Myapp

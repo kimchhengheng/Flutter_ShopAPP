@@ -54,14 +54,25 @@ class Products with ChangeNotifier {
     return [..._items]; // this mean make another list by taking the list extract one level outside
   }
   // should have the fetch from database when the pull to refresh for product edit  and init for shop
-  Future<void> fetchAndSetProduct() async {
+  Future<void> fetchAndSetProduct([bool filterprod=false]) async {
+//filter the product and alternate fecth
 
-    var url = 'https://shopapp-7d685.firebaseio.com/product.json?auth=$token';
+    // we have to change the rule in realtime firebase if you want to filter it , simply adding the "products" : { ".indexOn": [ "createor"]
+    // i think it mean in products go one level deeper and indexOn creator but products is likest of productId and another map inside that map have creator
+//    var filterurl = "";
+//    if(filterprod){
+//      filterurl = 'orderBy="creator"&equalTo="$userId"'; orderBy="creatorId"&equalTo="$userId"
+//    } short hand
+//    print(filterprod);
+    final filterurl= filterprod ? 'orderBy="creator"&equalTo="$userId"': ''; // for orderby to work we have to add index on in rule firebase
+//    print(filterurl);
+    var url = 'https://shopapp-7d685.firebaseio.com/product.json?auth=$token&$filterurl';
     // we have to wait until get every from the database so we need async await
     try{
       final response =await http.get(url);
       final responseData = json.decode(response.body) as Map<String , dynamic>;
       // flutter does not accept Map of Map
+//      print(responseData);
       List<Product> productlist = [];
       url = 'https://shopapp-7d685.firebaseio.com/Favourite/$userId.json?auth=$token';
       final favoriteResponse = await http.get(url);
@@ -108,16 +119,16 @@ class Products with ChangeNotifier {
     // first where return the element
   }
   Future<void> updateProduct(Map<String, Object> product) async{
-    final url = 'https://shopapp-7d685.firebaseio.com/product/${product['id']}.json';
+    final url = 'https://shopapp-7d685.firebaseio.com/product/${product['id']}.json?auth=$token';
     int proInd = _items.indexWhere((prod) {return prod.id == product['id'];});
     if(proInd >=0){
-      var respone = await http.patch(url, body: json.encode({
+      var response = await http.patch(url, body: json.encode({
                 'title': product['title'],
                 'price':product['price'] ,
                 'description': product['description'] ,
                 'imageUrl': product['imageUrl'],
               }));
-      if(respone.statusCode>=400) throw HttpError("cannot update");
+      if(response.statusCode>=400) throw HttpError("cannot update");
       _items[proInd]= Product(
         id: product['id'],
         title: product['title'],
@@ -136,8 +147,8 @@ class Products with ChangeNotifier {
   //add product
   // Future<void> mean is type future the return type is void which is the value pass to then method
   Future<void> addProduct(Map<String, Object> product) async{
-      final url = 'https://shopapp-7d685.firebaseio.com/product.json';
-      product['isFavorite']=false;
+      final url = 'https://shopapp-7d685.firebaseio.com/product.json?auth=$token';
+      product['creator']=userId;
       // if there is problem post and get will throw the error automatically but not the patch put and delete
   // the error does not throw and keep execute the code after the error part so handle the exception by ourself
         var response = await http.post(url, body: json.encode(product));
@@ -171,7 +182,7 @@ class Products with ChangeNotifier {
   Future<void> deleteProduct(String produceId) async{
     // we remove the produce first if cannot remove put it back
 
-    final url = 'https://shopapp-7d685.firebaseio.com/product/$produceId.json';
+    final url = 'https://shopapp-7d685.firebaseio.com/product/$produceId.json?auth=$token';
 //    _items.forEach((element) {
 //      if(element.id == produceId)
 //        print(element.id);});

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/Provider/Products.dart';
 
 //import 'Product.dart';
 
@@ -20,11 +21,20 @@ class CartItem {
 class CartList with ChangeNotifier {
   Map<String, CartItem> _cartlist= {};
 
+
   CartList ();
 
   Map<String, CartItem> get cartlist => {..._cartlist} ;
 
-  void addItem(String productId, String title, double price){
+  CartItem getCartItem(String productId){
+    if(_cartlist.isNotEmpty){
+      return _cartlist[productId];
+    }
+    return null;
+  }
+
+
+  void addItem(String productId, String title, double price, [int prevquantity = 0]){
     if(_cartlist.containsKey(productId)){
       // increase the qunatiy_
       _cartlist.update(productId, (oldvalue) {
@@ -36,8 +46,15 @@ class CartList with ChangeNotifier {
       } );
     }
     else {
-      // add the new item with productId as the key 
-      _cartlist.putIfAbsent(productId, () => CartItem(id: DateTime.now().toString(), title: title, price: price, quantity: 1));
+      // add the new item with productId as the key
+//      print(prevquantity);
+      if(prevquantity ==0){
+        _cartlist.putIfAbsent(productId, () => CartItem(id: DateTime.now().toString(), title: title, price: price, quantity: 1));
+      }
+      else{
+        _cartlist.putIfAbsent(productId, () => CartItem(id: DateTime.now().toString(), title: title, price: price, quantity: prevquantity));
+      }
+
     }
     notifyListeners();
   }
@@ -55,12 +72,13 @@ class CartList with ChangeNotifier {
   void removeCartItem(String productId){
     // check the product in the cartlist first
 //    print(_cartlist.containsKey(productId));
-    if(_cartlist.containsKey(productId)){
-//      print("remove");
-      _cartlist.remove(productId);
-      notifyListeners();
-    }
 
+    if(_cartlist.containsKey(productId)){
+
+      _cartlist.remove(productId);
+
+    }
+    notifyListeners();
   }
   // this is just remove only one quantity
   void undoAddItem(String productId){

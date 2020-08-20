@@ -36,6 +36,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 //       print("loading true");
        _isloading= true;
      });
+//     print('fetch product in product over screen'); every time we push or push replace the widget start from scratch
      // so if we not wait for the frecht to finish the setstate gonna execute before the that
      Provider.of<Products>(context, listen: false).fetchAndSetProduct().then((_) {
 //          print("finish fetch ");
@@ -45,8 +46,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
          _isloading=false;
        });
      });
-
-
    }
     _firstinit=false;
 //    print(_firstinit);
