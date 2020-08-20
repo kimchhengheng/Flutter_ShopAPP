@@ -9,6 +9,8 @@ import 'dart:convert';
 // provider is like producer, first we have to create Provider class then declare which widget will be the provider by the ChangeNotifyProvider ,
 // in create key of this widget it declare which instance will be the provider so the child and child of child, can retrieve the data without passing through constructor
 class Products with ChangeNotifier {
+  final String token;
+  final String userId;
   List<Product> _items = [
 //    Product(
 //      id: 'p1',
@@ -44,22 +46,30 @@ class Products with ChangeNotifier {
 //    ),
   ];
 
+
+  Products(this.token, this.userId, this._items);
+
   List<Product> get items {
 //    _items;this would return the reference lead to data leak
     return [..._items]; // this mean make another list by taking the list extract one level outside
   }
   // should have the fetch from database when the pull to refresh for product edit  and init for shop
   Future<void> fetchAndSetProduct() async {
-    final url = 'https://shopapp-7d685.firebaseio.com/product.json';
+
+    var url = 'https://shopapp-7d685.firebaseio.com/product.json?auth=$token';
     // we have to wait until get every from the database so we need async await
     try{
       final response =await http.get(url);
       final responseData = json.decode(response.body) as Map<String , dynamic>;
       // flutter does not accept Map of Map
       List<Product> productlist = [];
-
+      url = 'https://shopapp-7d685.firebaseio.com/Favourite/$userId.json?auth=$token';
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body) as Map<String , dynamic>;
+//      print(responseData);
       if(responseData.containsKey('error') || responseData == null)
         return ;
+//      print(favoriteData['id']); if the map does not have the key return null ?? question mean if null
       responseData.forEach((productId, productData) {
         // you dont need to acess through responseData since it is key value pair iteration already
 //        print(productData['price'].runtimeType); string not double
@@ -68,10 +78,15 @@ class Products with ChangeNotifier {
             id: productId,
             title: productData['title'],
             description: productData['description'],
-            price: productData['price'],
-            imageUrl:productData['imageUrl']));
+            price: double.parse(productData['price']),
+            imageUrl:productData['imageUrl'],
+            isFavorite: favoriteData == null ? false : favoriteData[productId] ?? false,
+        )
+        );
+
+        // this expression is favoriteData is empty make isFavorite false then if favoriteData is not empty try to check the with the product key (when product doesnot exist it would return null ) so assign to false too
       });
-      print('after');
+//      print('after');
       _items = productlist;
 
       notifyListeners();
@@ -79,7 +94,7 @@ class Products with ChangeNotifier {
     }
     catch(error){
       print(error);
-//      print('fechtand setup');
+      print('fechtand setup');
     }
 
   }

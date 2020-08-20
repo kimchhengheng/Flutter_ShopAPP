@@ -30,7 +30,7 @@ class ProductGrid extends StatelessWidget {
           return ChangeNotifierProvider.value(
               value: productlist[index] ,
               child: ProductItem()
-              // the nested provider make widget provider reused, so the route cannot find after it come back, the data attach to widget change then widget reuse
+              // the nested provider make widget provider reused, so the roiute cannot find after it come back, the data attach to widget change then widget reuse
 //            .value make them detach and attach the data not changing , should be use on single list of grid or view so it would even it come back, .value existing ChangeNotifier:
 //          .value make sure provider will work even the value is change , handle the widget recycle
           );

@@ -41,6 +41,7 @@ class AuthScreen extends StatelessWidget {
                   // auth card
                   Flexible(
                     child: Container(
+
                       child: Text(
                         "Shop App",
                         style: TextStyle(
@@ -48,7 +49,7 @@ class AuthScreen extends StatelessWidget {
                           fontFamily: 'Anton',
                         ),
                       ),
-                      padding: EdgeInsets.only(bottom: 20),
+                      padding: EdgeInsets.all(20),
                       margin: EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -130,17 +131,24 @@ class _AuthCardState extends State<AuthCard> {
       if(!isvalid)
         return ;
       _form.currentState.save();
-      if(_authMode == AuthMode.Login){
-        // because sign in return the method so .signIn would call the method that is returning
-        Provider.of<Auth>(context, listen: false).signIn(_inputData['email'], _inputData['password']);
+      try{
+        if(_authMode == AuthMode.Login){
+          // because sign in return the method so .signIn would call the method that is returning
+         await Provider.of<Auth>(context, listen: false).signIn(_inputData['email'], _inputData['password']);
+        }
+        else{
+         await Provider.of<Auth>(context, listen: false).signUp(_inputData['email'], _inputData['password']);
+        }
       }
-      else{
-        Provider.of<Auth>(context, listen: false).signUp(_inputData['email'], _inputData['password']);
+      catch(error){
+        print("saveform "+ error);
       }
+//      Navigator.of(context).pushReplacementNamed("/");
 
   }
   @override
   Widget build(BuildContext context) {
+//   print("auth screen build ");
     final deviceSize = MediaQuery.of(context).size;
     return Card(
       elevation: 6,

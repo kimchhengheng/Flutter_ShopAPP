@@ -20,21 +20,25 @@ class Product with ChangeNotifier{
     @required this.imageUrl,
     this.isFavorite = false});
 
-  Future<void> toggleFavorite() async{
+  Future<void> toggleFavorite(String userId, String token) async{
     //handle the change of fav to the db
-    final url = 'https://shopapp-7d685.firebaseio.com/product/$id.json';
+    final url = 'https://shopapp-7d685.firebaseio.com/Favourite/$userId/$id.json?auth=$token';
+    // every time we send request to firebase have to attach the token to confirm credential
 //    print(url);
     bool prevfav = isFavorite;
     isFavorite=!isFavorite;
 //    print(isFavorite);
     try{
-      final response = await http.patch(url, body: json.encode({
-        'isFavorite': isFavorite
-      }));
+      final response = await http.put(url, body: json.encode(
+        isFavorite
+      ));
+
       if(response.statusCode >= 400) throw HttpError("cannot change the value");
+
       notifyListeners();
     }
-    catch(_){
+    catch(error){
+      print(error);
       isFavorite=prevfav;
       notifyListeners();
     }

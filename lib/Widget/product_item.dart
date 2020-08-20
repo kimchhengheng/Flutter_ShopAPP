@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../Provider/auth.dart';
 import '../Provider/Cart.dart';
 import '../Screen/product_detail_screen.dart';
 import '../Provider/Product.dart';
@@ -14,7 +15,8 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
-    final cartlist = Provider.of<CartList>(context);
+    final cartlist = Provider.of<CartList>(context, listen: false);
+    final authData = Provider.of<Auth>(context,listen: false);
     return GridTile(
       child: GestureDetector(
         onTap: () {
@@ -33,7 +35,7 @@ class ProductItem extends StatelessWidget {
             icon: Icon(product.isFavorite? Icons.favorite: Icons.favorite_border,
               color: Theme.of(context).primaryColorLight,),
             onPressed: () {
-              product.toggleFavorite();
+              product.toggleFavorite(authData.userId,authData.token);
             },
           ),
 //          the place that need to rebuilt is the fav icon so we can make it consumer only this

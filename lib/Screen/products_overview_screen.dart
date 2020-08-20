@@ -29,7 +29,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   void didChangeDependencies() {
+//    print(_firstinit);
    if(_firstinit){
+//     print("firsinit product overview screen");
      setState(() {
 //       print("loading true");
        _isloading= true;
@@ -47,6 +49,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
    }
     _firstinit=false;
+//    print(_firstinit);
     super.didChangeDependencies();
   }
 
@@ -101,7 +104,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       drawer: AppDrawer(),
       body: _isloading? Center(
         child: CircularProgressIndicator(),
-      ): ProductGrid(isfav),
+      ):  ProductGrid(isfav),
       // this would create the grid view that each of it just called the item
     );
   }
