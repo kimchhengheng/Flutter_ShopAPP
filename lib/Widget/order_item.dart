@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shop_app/Provider/Cart.dart';
@@ -26,7 +28,7 @@ class _OrderItemState extends State<OrderItem> {
       ),
       title: Text("Ordered on ${DateFormat("dd/MMM/yy hh:mm").format(widget.orditem.dateTime)}"),
       subtitle: _expanded?
-      DisplayExtended(widget.orditem.products)
+      DisplayExtended(widget.orditem.products,_expanded)
       : Text(""),
       trailing: IconButton(
         icon: _expanded?Icon(Icons.expand_less): Icon(Icons.expand_more),
@@ -42,15 +44,20 @@ class _OrderItemState extends State<OrderItem> {
 
 class DisplayExtended extends StatelessWidget {
   final List<CartItem> orditemlist;
+  bool _expanded;
 
-  DisplayExtended(this.orditemlist);
+  DisplayExtended(this.orditemlist, this._expanded);
 
   @override
   Widget build(BuildContext context) {
-    return (Container(
-        constraints: BoxConstraints(
-        maxHeight: 100,
-          ),
+    return (AnimatedContainer(
+
+        duration: Duration(milliseconds: 500),
+        curve: Curves.fastOutSlowIn,
+        height: _expanded? min(30, 70) : 0 ,
+//        constraints: BoxConstraints(
+//          maxHeight: 100,
+//          ),
           child: SingleChildScrollView(
               child: Column(
                   children: [

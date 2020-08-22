@@ -42,16 +42,18 @@ class OrdersList with ChangeNotifier {
       final responseData = json.decode(response.body) as Map<String, dynamic>;
       // flutter does not accept Map of Map
       List<OrderItem> orderlist = [];
-      if (responseData == null)
+      if (responseData == null || responseData.containsKey('error'))
         return;
-
+//      print(responseData);
       responseData.forEach((orderId, orderData) {
         // you dont need to acess through responseData since it is key value pair iteration already
 //        print(orderData['products']['price']);// string not double
 //      print(orderId);
 //      print(orderData);
 //      print(orderData['products']);
-        orderlist.add(OrderItem(
+
+
+        orderlist.insert(0 ,OrderItem(
             id: orderId,
             amount: orderData['amount'], // it is double not string
             dateTime: DateTime.parse(orderData['datetime']),
@@ -59,7 +61,7 @@ class OrdersList with ChangeNotifier {
 //             map function returns an iterator of a new array that each element excute the function
               // so this list of OrderData would iterate through each element by map then each element would be create CartItem return as iterable list then convert by toList
 //                print(ele['price'].runtimeType);
-//              print(ele);
+              print(ele);
 
                 return CartItem(
                     id: ele['id'],

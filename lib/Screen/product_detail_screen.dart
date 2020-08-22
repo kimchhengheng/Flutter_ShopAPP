@@ -19,7 +19,9 @@ class ProductDetailScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(prod.imageUrl, fit: BoxFit.cover, height: 255, width: double.infinity,),
+            Hero(
+                tag: "${routeArg['id']}",
+                child: Image.network(prod.imageUrl, fit: BoxFit.cover, height: 255, width: double.infinity,)),
             Text("\$ ${prod.price}", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.purple),),
             Text(prod.description,  style: TextStyle(fontSize: 25, color: Colors.deepPurple,),textAlign: TextAlign.center,),
           ],

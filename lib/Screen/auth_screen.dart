@@ -4,8 +4,8 @@ import 'package:shop_app/Provider/auth.dart';
 import 'dart:math';
 
 import '../Screen/products_overview_screen.dart';
-
-
+// there are two type of animation implicit and explicit animation
+// with animated container flutter deal with the change of new and old value for use already
 class AuthScreen extends StatelessWidget {
 
   @override
@@ -155,7 +155,9 @@ class _AuthCardState extends State<AuthCard> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: Container(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 400),
+        curve: Curves.fastOutSlowIn,
         height: _authMode == AuthMode.Signup ? 320 : 260,
         constraints: BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
         width: deviceSize.width * 0.75,

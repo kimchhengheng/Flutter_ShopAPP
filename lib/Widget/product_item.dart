@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,9 +24,12 @@ class ProductItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pushNamed(ProductDetailScreen.routeName, arguments: {'id': product.id} );
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Image.network(product.imageUrl, fit: BoxFit.fill,)
+        child: Hero(
+          tag: "${product.id}",
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.file(File(product.imageUrl), fit: BoxFit.fill),
+          ),
         ),
       ),
       footer: ClipRRect(

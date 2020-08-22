@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +28,8 @@ class UserProductItem extends StatelessWidget {
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(prod.imageUrl),
+        backgroundImage:FileImage(File(prod.imageUrl)),
+
       ),
       title: Text(prod.title),
       subtitle: Column(
@@ -54,8 +57,10 @@ class UserProductItem extends StatelessWidget {
                   icon: Icon(Icons.delete, color: Theme.of(context).primaryColor,),
                   onPressed: () async {
                     CartItem itemtoremove = Provider.of<CartList>(context, listen: false).getCartItem(productid);
-                    print(itemtoremove.title);
-                    Provider.of<CartList>(context, listen: false).removeCartItem(productid);
+//                    print(itemtoremove.title);
+                    if(itemtoremove != null){
+                      Provider.of<CartList>(context, listen: false).removeCartItem(productid);
+                    }
                     try {
 
                       await Provider.of<Products>(context, listen: false).deleteProduct(productid);

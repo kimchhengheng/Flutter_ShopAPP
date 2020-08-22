@@ -7,10 +7,11 @@
 //The framework will call this init method exactly once for each State object it creates.
 // didchange depency when dependency of the state change
 
-import 'package:cached_network_image/cached_network_image.dart';
+//import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../Widget/image_picker.dart';
 
 import '../Provider/Products.dart';
 
@@ -29,8 +30,9 @@ class _EditAddScreenState extends State<EditAddScreen> {
   final _descripfnode = FocusNode();
   final _imageurlfnode = FocusNode();
   var _imagecontent= TextEditingController();
+  String _imagepath = null;
   Products productlist ;
-  bool edit=false;
+//  bool edit=false;
   bool firstinit = true; // attribute of the class is only one
   Map<String, Object> product = {};
   bool isloading=false;
@@ -58,6 +60,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
         product['imageUrl'] = prod.imageUrl;
         product['isFavorite'] = prod.isFavorite;
         _imagecontent = TextEditingController(text: product['imageUrl']);
+//        edit = true;
       }
     }
     firstinit=false;
@@ -70,9 +73,13 @@ class _EditAddScreenState extends State<EditAddScreen> {
 
     });
   }
+
+  void setImagepath(String imgpath){
+    _imagepath = imgpath;
+  }
   Future<void> _saveForm() async{
     final isvalid = _form.currentState.validate();
-    if(!isvalid){
+    if(!isvalid || _imagepath ==null){
       return ;
     }
 
@@ -82,6 +89,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
     setState(() {
       isloading=true;
     });
+    product['imageUrl']=_imagepath;
     if(product.containsKey("id") ){// if it have the key id it mean the product is edit , without key id mean new
       try {
        await Provider.of<Products>(context, listen: false).updateProduct(product);
@@ -124,7 +132,7 @@ class _EditAddScreenState extends State<EditAddScreen> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text('An error occurred!'),
+                title: Text('An error occurred! in add '),
                 content: Text('Cannot add the product .'),
                 actions: [
                   FlatButton(
@@ -254,64 +262,53 @@ class _EditAddScreenState extends State<EditAddScreen> {
                     return null;
                   },
                   textInputAction: TextInputAction.done, // make the nexk on the softkeyboard
-                  onFieldSubmitted: (value) {
-                    // when we press submit of softkeyboard
-                    FocusScope.of(context).requestFocus(_pricefnode);
-                  },
+//                  onFieldSubmitted: (value) {
+//                    // when we press submit of softkeyboard
+//                    FocusScope.of(context).requestFocus(_pricefnode);
+//                  },
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 10, right: 10),
+                ImageInput(setImagepath, product['imageUrl'] ?? null),
 
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Theme.of(context).primaryColorLight),
-                      ),
-                      width: 100,
-                      height: 100,
-                      child: _imagecontent.text.isEmpty? Text( "Image URL",textAlign: TextAlign.center,):
-                      CachedNetworkImage(
-                        imageUrl: _imagecontent.text,
-                        //placeholder: (context, url) => CircularProgressIndicator(), //Widget displayed while the target [imageUrl] is loading.
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
-                      //_imagecontent.text.isEmpty? Text( "Image URL",textAlign: TextAlign.center,): Image.network(_imagecontent.text, fit: BoxFit.cover,),
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        // we cannot used initialvale and controller at the same time
-                        //initialValue: product.isNotEmpty? product['imageUrl']: "",
-                        controller: _imagecontent,
-                        focusNode: _imageurlfnode,
-                        keyboardType: TextInputType.url,
-                        decoration: InputDecoration(
-                          labelText: "Image URL",
-                          //_imagecontent.text.isEmpty ? "Image url": NetworkImage(_imagecontent.text),
-                        ),
-                        onSaved: (value) {
-                          product['imageUrl']=value;
-                        }
-                        ,
-                        validator: (value) {
 
-                          if(value.isEmpty){
-                            return 'Please input the image URL';
-                          }
+//                    Expanded(
+//                      child: TextFormField(
+//                        // we cannot used initialvale and controller at the same time
+//                        //initialValue: product.isNotEmpty? product['imageUrl']: "",
+//                        controller: _imagecontent,
+//                        focusNode: _imageurlfnode,
+//                        keyboardType: TextInputType.url,
+//                        decoration: InputDecoration(
+//                          labelText: "Image URL",
+//                          //_imagecontent.text.isEmpty ? "Image url": NetworkImage(_imagecontent.text),
+//                        ),
+//                        onSaved: (value) {
+//                          product['imageUrl']=value;
+//                        }
+//                        ,
+//                        validator: (value) {
+//
+//                          if(value.isEmpty){
+//                            return 'Please input the image URL';
+//                          }
+//
+//                          return null;
+//                        },
+//                        textInputAction: TextInputAction.done, // make the nexk on the softkeyboard
+//                        onFieldSubmitted: (value) {
+//                          // when click submit we should call the method to save
+//                          _saveForm();
+//
+//                          // save then should pop to previous screen
+//                        },
+//                      ),
+//                    )
 
-                          return null;
-                        },
-                        textInputAction: TextInputAction.done, // make the nexk on the softkeyboard
-                        onFieldSubmitted: (value) {
-                          // when click submit we should call the method to save
-                          _saveForm();
 
-                          // save then should pop to previous screen
-                        },
-                      ),
-                    )
-                  ],
-                )
+                FlatButton.icon(
+                    color: Theme.of(context).primaryColorLight,
+                    onPressed: _saveForm,
+                    icon: Icon(Icons.add_circle_outline),
+                    label:Text("Add product"))
               ],
             ),
           ),

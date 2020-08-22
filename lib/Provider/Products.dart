@@ -78,7 +78,7 @@ class Products with ChangeNotifier {
       final favoriteResponse = await http.get(url);
       final favoriteData = json.decode(favoriteResponse.body) as Map<String , dynamic>;
 //      print(responseData);
-      if(responseData.containsKey('error') || responseData == null)
+      if(responseData == null || responseData.containsKey('error'))
         return ;
 //      print(favoriteData['id']); if the map does not have the key return null ?? question mean if null
       responseData.forEach((productId, productData) {
@@ -152,16 +152,23 @@ class Products with ChangeNotifier {
       // if there is problem post and get will throw the error automatically but not the patch put and delete
   // the error does not throw and keep execute the code after the error part so handle the exception by ourself
         var response = await http.post(url, body: json.encode(product));
+
         if(response.statusCode >= 400) {
           throw HttpError("Incomplete action");
         }
+//        print(json.decode(response.body)['name']);
+//        print(product['title']);
+//        print(product['description']);
+//        print(product['price']);
+//        print(product['imageUrl']);
         _items.add(Product(
             id: json.decode(response.body)['name'],
             title: product['title'],
             description: product['description'],
-            price: double.parse(product['price']),
+            price:double.parse(product['price'].toString()) ,
             imageUrl: product['imageUrl'])
         );
+        // cannot create the product
         notifyListeners();
 
       }
@@ -193,7 +200,6 @@ class Products with ChangeNotifier {
     // if we dont notifylistener the product grid will try to access the one that we have delete
     var response = await http.delete(url);
     if(response.statusCode >=400) {
-
       _items.insert(deleteProInd, delpro);
       notifyListeners();
       throw HttpError("Cannot delete");
