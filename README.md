@@ -14,7 +14,7 @@ When the user click Order now, they would go the order screen to display the ord
 
 
 
-![ezgif com-video-to-gif](https://user-images.githubusercontent.com/43865591/90961871-de4d3900-e479-11ea-9d0d-66eb47cfde0c.gif)
+![ezgif com-video-to-gif](https://user-images.githubusercontent.com/43865591/90961871-de4d3900-e479-11ea-9d0d-66eb47cfde0c.gif)![media1-DbLiTvEKcompressed-online](https://user-images.githubusercontent.com/43865591/90986341-23dc3580-e550-11ea-8bf3-845c644420f6.gif)
 
 
 
