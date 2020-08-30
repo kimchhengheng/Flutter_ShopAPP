@@ -12,7 +12,7 @@ In the cart screen, user can make the order only if there cart is not empty. Use
 When the user click Order now, they would go the order screen to display the order product. By click arrow down, user to display their order detail item.</br>
 
 
-
+![media1-DbLiTvEKcompressed-online](https://user-images.githubusercontent.com/43865591/91649334-e4768300-ea40-11ea-8040-58947b885176.gif)
 
 
 
