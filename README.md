@@ -14,7 +14,6 @@ When the user click Order now, they would go the order screen to display the ord
 
 
 
-[media1-DbLiTvEKcompressed-online](https://user-images.githubusercontent.com/43865591/90986341-23dc3580-e550-11ea-8bf3-845c644420f6.gif)
 
 
 
